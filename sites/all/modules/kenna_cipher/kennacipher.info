@@ -1,5 +1,5 @@
 name = Kenna Cipher
-description = A simple Ceaser Shift Cypher generator
+description = A simple Ceaser Shift Cipher generator.
 package = Kenna Modules
 core = 7.x
 files[] = kennacipher.module

@@ -1,1 +1,108 @@
-<php
+<?php
+
+  function kennacipher_menu() {
+    $items=array();
+
+    $items['cipher'] = array(
+      'title' => 'Cipherise',
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('kennacipher_form'),
+      'access callback' => TRUE,
+      'type' => MENU_NORMAL_ITEM,
+    );
+
+    $items['encrypt_success'] = array(
+      'title' => 'Cipher Success',
+      'page callback' => 'cipher_result',
+      'access callback' => TRUE,
+      'type' => MENU_CALLBACK,
+    );
+  return $items;
+  }
+
+//starting form
+function kennacipher_form() {
+  $form['shift_value'] = array(
+    '#title' => 'Shift Value',
+    '#type' => 'textfield',
+    '#description' => t('Please enter your shift value (between 1 and 24).'),
+    '#element_validate' => array('element_validate_integer','element_validate_alphabet_range'),
+    '#required' => TRUE,
+  );
+
+  //define options in an array for radio buttons
+  $active = array("Right" => t('Right'), "Left" => t('Left'));
+
+  $form['shift_direction']=array(
+    '#description' => t('Is the cipher shifted left or right?'),
+    '#title' => 'Shift Direction',
+    '#type' => 'radios',
+    //call options array for radio buttons
+    '#options' => $active,
+    '#required' => TRUE,
+  );
+
+  $form['input'] = array (
+   '#description' => t('Enter the text you would like ciphered/decripyted'),
+   '#title' => t('Enter text'),
+   '#type' => 'textfield',
+   '#required' => TRUE,
+  );
+
+  $form['submit'] =array(
+    '#type' => 'submit',
+    '#value' => 'TRANSFOOOOOORM',
+  );
+  return $form;
+}
+
+//validations
+//id must be between 1 and 26
+function element_validate_alphabet_range($shift) {
+  if ($shift['#value'] > 26 || $shift['#value'] <1) {
+    form_error($shift, t('Shift Value must be between 1 and 26'));
+  }
+}
+
+//logic
+function kennacipher_form_submit($form, &$form_state) {
+
+  $shift_value = $form_state['values']['shift_value'];
+  $shift_direction = $form_state['values']['shift_direction'];
+  $input = strtolower($form_state['values']['input']);
+  $_SESSION['cipher'] = kennaciper_encrypt_function($input, $shift_direction, $shift_value);
+  $form_state['redirect'] = 'encrypt_success';
+}
+
+  function kennaciper_encrypt_function($input, $shift_direction, $shift_value){
+  $shifty_array = array();
+
+  $split_input = str_split($input, 1);
+
+  foreach ($split_input as $i=>$value) {
+    //if a character is in the alphabet array and is shifted right, do logic
+    if($shift_direction=="Right"){
+
+      //turn the key to the Right however many notches
+      $ascii_number = ord($value) + $shift_value;
+    }
+    if($shift_direction == "Left"){
+      $ascii_number = ord($value) - $shift_value;
+    }
+
+    $value = chr($ascii_number);
+
+    array_push($shifty_array, $value);
+  }
+    $cipher = implode($shifty_array);
+    return $cipher;
+    }
+
+  
+
+
+
+  function cipher_result() {
+    $result = $_SESSION['cipher'];
+    return $result;
+  }
