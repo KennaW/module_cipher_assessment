@@ -70,6 +70,7 @@ function kennacipher_form_submit($form, &$form_state) {
   $shift_value = $form_state['values']['shift_value'];
   $shift_direction = $form_state['values']['shift_direction'];
   $input = strtolower($form_state['values']['input']);
+
   $_SESSION['cipher'] = kennaciper_encrypt_function($input, $shift_direction, $shift_value);
   $form_state['redirect'] = 'encrypt_success';
 }
@@ -107,7 +108,7 @@ function kennacipher_form_submit($form, &$form_state) {
     //Push the character into array
     array_push($shifty_array, $value);
   }
-  
+
     $cipher = implode($shifty_array);
     return $cipher;
     }
