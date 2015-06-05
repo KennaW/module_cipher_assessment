@@ -25,7 +25,7 @@ function kennacipher_form() {
   $form['shift_value'] = array(
     '#title' => 'Shift Value',
     '#type' => 'textfield',
-    '#description' => t('Please enter your shift value (between 1 and 24).'),
+    '#description' => t('Please enter your shift value (between 1 and 26).'),
     '#element_validate' => array('element_validate_integer','element_validate_alphabet_range'),
     '#required' => TRUE,
   );
@@ -80,25 +80,38 @@ function kennacipher_form_submit($form, &$form_state) {
   $split_input = str_split($input, 1);
 
   foreach ($split_input as $i=>$value) {
-    //if a character is in the alphabet array and is shifted right, do logic
-    if($shift_direction=="Right"){
 
-      //turn the key to the Right however many notches
+    //if the user selected shifted right, then ADD shift value to ASCII value
+    if($shift_direction=="Right"){
       $ascii_number = ord($value) + $shift_value;
+
+    //if ASCII value has gone past lowercase z, then subtract 26 from ASCII value.
+        if($ascii_number > 122) {
+          $ascii_number -= 26;
+        }
     }
+
+    //if the user selected shifted left, then SUBTRACT shift value from ASCII value
     if($shift_direction == "Left"){
       $ascii_number = ord($value) - $shift_value;
+
+    //if ASCII value has gone below lowercase a, then add 26 to ASCII
+      if($ascii_number < 97) {
+        $ascii_number +=26;
+      }
     }
 
+    //Turns ASCII value back into character
     $value = chr($ascii_number);
 
+    //Push the character into array
     array_push($shifty_array, $value);
   }
+  
     $cipher = implode($shifty_array);
     return $cipher;
     }
 
-  
 
 
 
